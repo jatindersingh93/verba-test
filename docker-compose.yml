@@ -1,5 +1,5 @@
 ---
-version: '3.4'
+version: '3.9'
 
 services:
   verba:
@@ -20,7 +20,7 @@ services:
       - GITHUB_TOKEN=$GITHUB_TOKEN
       ## IF YOU WANT AUTHENTICATION, UNCOMENT BELLOW 
       ## AND ADD WEAVIATE SERVICE
-      #- WEAVIATE_API_KEY_VERBA=adminkey
+      - WEAVIATE_API_KEY_VERBA=adminkey
 
     volumes:
       - ./data:/data/
@@ -64,12 +64,12 @@ services:
       ENABLE_MODULES: 'text2vec-openai, generative-openai, qna-openai, text2vec-cohere'
       CLUSTER_HOSTNAME: 'node1'
       #######IF YOU WANT AUTHENTICATION UNCOMMENT BELOW########
-      # AUTHENTICATION_APIKEY_ENABLED: 'true'
-      # AUTHENTICATION_APIKEY_ALLOWED_KEYS: 'readonlykey,adminkey'
-      # AUTHENTICATION_APIKEY_USERS: 'jane@doe.com,john@doe.com'
-      # AUTHORIZATION_ADMINLIST_ENABLED: 'true'
-      # AUTHORIZATION_ADMINLIST_USERS: 'john@doe.com'
-      # AUTHORIZATION_ADMINLIST_READONLY_USERS: 'jane@doe.com'
+      AUTHENTICATION_APIKEY_ENABLED: 'true'
+      AUTHENTICATION_APIKEY_ALLOWED_KEYS: 'readonlykey,adminkey'
+      AUTHENTICATION_APIKEY_USERS: 'jane@doe.com,john@doe.com'
+      AUTHORIZATION_ADMINLIST_ENABLED: 'true'
+      AUTHORIZATION_ADMINLIST_USERS: 'john@doe.com'
+      AUTHORIZATION_ADMINLIST_READONLY_USERS: 'jane@doe.com'
 
 volumes:
   weaviate_data: {}

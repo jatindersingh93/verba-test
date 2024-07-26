@@ -1,0 +1,108 @@
+# Save the output of this file and use kubectl create -f to import
+# it into Kubernetes.
+#
+# Created with podman-5.1.2
+
+# NOTE: If you generated this yaml from an unprivileged and rootless podman container on an SELinux
+# enabled system, check the podman generate kube man page for steps to follow to ensure that your pod/container
+# has the right permissions to access the volumes added.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2024-07-26T19:18:11Z"
+  labels:
+    app: verba-weaviate-1-pod
+  name: verba-weaviate-1-pod
+spec:
+  ports:
+  - name: "8080"
+    nodePort: 32219
+    port: 8080
+    targetPort: 8080
+  - name: "8080"
+    nodePort: 31845
+    port: 8080
+    targetPort: 8080
+  - name: "8000"
+    nodePort: 32134
+    port: 8000
+    targetPort: 8000
+  selector:
+    app: verba-weaviate-1-pod
+  type: NodePort
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2024-07-26T19:18:11Z"
+  labels:
+    app: verba-weaviate-1-pod
+  name: verba-weaviate-1-pod
+spec:
+  containers:
+  - args:
+    - --host
+    - 0.0.0.0
+    - --port
+    - "8080"
+    - --scheme
+    - http
+    env:
+    - name: AUTHORIZATION_ADMINLIST_ENABLED
+      value: "true"
+    - name: PERSISTENCE_DATA_PATH
+      value: /var/lib/weaviate
+    - name: AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED
+      value: "true"
+    - name: QUERY_DEFAULTS_LIMIT
+      value: "25"
+    - name: AUTHORIZATION_ADMINLIST_USERS
+      value: john@doe.com
+    - name: AUTHORIZATION_ADMINLIST_READONLY_USERS
+      value: jane@doe.com
+    - name: ENABLE_MODULES
+      value: text2vec-openai, generative-openai, qna-openai, text2vec-cohere
+    - name: AUTHENTICATION_APIKEY_ENABLED
+      value: "true"
+    - name: OPENAI_APIKEY
+      value: sk-proj-Hxm1nuthcD4RIhM54h45T3BlbkFJnKYDZgeF4JR5vXIWBVOa
+    - name: AUTHENTICATION_APIKEY_USERS
+      value: jane@doe.com,john@doe.com
+    - name: AUTHENTICATION_APIKEY_ALLOWED_KEYS
+      value: readonlykey,adminkey
+    - name: CLUSTER_HOSTNAME
+      value: node1
+    image: docker.io/semitechnologies/weaviate:1.24.2
+    name: verba-weaviate-1
+    ports:
+    - containerPort: 8080
+    - containerPort: 8080
+    volumeMounts:
+    - mountPath: /var/lib/weaviate
+      name: verba_weaviate_data-pvc
+  - env:
+    - name: WEAVIATE_URL_VERBA
+      value: http://weaviate:8080
+    - name: OPENAI_API_KEY
+      value: sk-proj-Hxm1nuthcD4RIhM54h45T3BlbkFJnKYDZgeF4JR5vXIWBVOa
+    - name: WEAVIATE_API_KEY_VERBA
+      value: adminkey
+    - name: OLLAMA_URL
+      value: http://host.docker.internal:11434
+    image: docker.io/jatindersingh93/verba:latest
+    name: verba-verba-1
+    ports:
+    - containerPort: 8000
+    volumeMounts:
+    - mountPath: /data
+      name: Users-jatindersingh-Desktop-Projects-Verba-data-host-0
+  restartPolicy: OnFailure
+  volumes:
+  - name: verba_weaviate_data-pvc
+    persistentVolumeClaim:
+      claimName: verba_weaviate_data
+  - hostPath:
+      path: /Users/jatindersingh/Desktop/Projects/Verba/data
+      type: Directory
+    name: Users-jatindersingh-Desktop-Projects-Verba-data-host-0
